@@ -1,9 +1,17 @@
 const crypto = require("crypto");
+
 const { getStore } = require("@netlify/blobs");
 
-const users = getStore("users");
-const bookings = getStore("bookings");
-const sessions = getStore("sessions");
+const blobOptions = {
+  siteID: process.env.SITE_ID,
+  token: process.env.NETLIFY_BLOBS_TOKEN
+};
+
+const users = getStore("users", blobOptions);
+
+const bookings = getStore("bookings", blobOptions);
+
+const sessions = getStore("sessions", blobOptions);
 
 function json(statusCode, data, extraHeaders = {}) {
   return {
