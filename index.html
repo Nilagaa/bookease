@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>BookEase | Welcome</title>
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="container navbar-inner">
+
+      <a href="/" class="logo">
+        <span class="logo-icon">B</span>
+        BookEase
+      </a>
+
+      <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#about">About</a>
+      </div>
+
+      <div class="nav-actions">
+        <a href="register.html" class="btn btn-primary">
+          Create Account
+        </a>
+      </div>
+
+    </div>
+  </nav>
+
+
+  <!-- HERO -->
+  <section class="hero">
+
+    <div class="container">
+
+      <div class="hero-content">
+
+        <div class="hero-label">
+          Simple. Convenient. Organized.
+        </div>
+
+        <h1>
+          Make your next booking easier.
+        </h1>
+
+        <p>
+          Book services, manage your appointments,
+          and keep everything organized in one simple place.
+        </p>
+
+        <div class="hero-buttons">
+
+          <a href="#login" class="btn btn-primary">
+            Get Started
+          </a>
+
+          <a href="#features" class="btn btn-outline">
+            Explore Features
+          </a>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- FEATURES -->
+  <section class="section" id="features">
+
+    <div class="container">
+
+      <div class="text-center">
+
+        <h2 class="section-title">
+          Everything in one place
+        </h2>
+
+        <p class="section-subtitle" style="margin: auto;">
+          Book and manage your services without complicated
+          processes or unnecessary steps.
+        </p>
+
+      </div>
+
+
+      <div class="features">
+
+        <div class="feature-card">
+
+          <div class="feature-icon">
+            ✓
+          </div>
+
+          <h3>Easy Booking</h3>
+
+          <p>
+            Schedule a service by choosing your preferred
+            date and time.
+          </p>
+
+        </div>
+
+
+        <div class="feature-card">
+
+          <div class="feature-icon">
+            ◷
+          </div>
+
+          <h3>Track Your Bookings</h3>
+
+          <p>
+            View your previous and upcoming bookings
+            from your dashboard.
+          </p>
+
+        </div>
+
+
+        <div class="feature-card">
+
+          <div class="feature-icon">
+            ◆
+          </div>
+
+          <h3>Simple Management</h3>
+
+          <p>
+            Administrators can view bookings and update
+            their status from one dashboard.
+          </p>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- LOGIN -->
+  <section class="section" id="login">
+
+    <div class="container">
+
+      <div class="auth-box" style="margin: auto;">
+
+        <h2>
+          Welcome back
+        </h2>
+
+        <p class="auth-description">
+          Sign in to access your BookEase account.
+        </p>
+
+        <div id="message"></div>
+
+
+        <form id="loginForm">
+
+          <div class="form-group">
+
+            <label for="username">
+              Username
+            </label>
+
+            <input
+              id="username"
+              name="username"
+              class="form-control"
+              type="text"
+              placeholder="Enter your username"
+              required
+            >
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label for="password">
+              Password
+            </label>
+
+            <input
+              id="password"
+              name="password"
+              class="form-control"
+              type="password"
+              placeholder="Enter your password"
+              required
+            >
+
+          </div>
+
+
+          <button
+            type="submit"
+            class="btn btn-primary"
+            style="width: 100%;"
+          >
+            Sign In
+          </button>
+
+        </form>
+
+
+        <div class="form-footer">
+
+          Don't have an account?
+
+          <a href="register.html">
+            Create one
+          </a>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- ABOUT -->
+  <section class="section" id="about">
+
+    <div class="container text-center">
+
+      <h2 class="section-title">
+        Designed to keep things simple
+      </h2>
+
+      <p class="section-subtitle" style="margin: auto;">
+
+        BookEase provides a straightforward booking system
+        where customers can create accounts and manage their
+        bookings while administrators can manage incoming requests.
+
+      </p>
+
+    </div>
+
+  </section>
+
+
+  <!-- FOOTER -->
+  <footer class="footer">
+
+    <div class="container">
+
+      © 2026 BookEase. All rights reserved.
+
+    </div>
+
+  </footer>
+
+
+  <script src="app.js"></script>
+
+  <script>
+
+    const loginForm =
+      document.getElementById("loginForm");
+
+    const message =
+      document.getElementById("message");
+
+
+    loginForm.addEventListener("submit", async (event) => {
+
+      event.preventDefault();
+
+      message.innerHTML = "";
+
+      const username =
+        document.getElementById("username").value;
+
+      const password =
+        document.getElementById("password").value;
+
+
+      try {
+
+        const result = await api("/login", {
+
+          method: "POST",
+
+          body: JSON.stringify({
+            username,
+            password
+          })
+
+        });
+
+
+        if (result.user.role === "admin") {
+
+          window.location.href = "/admin.html";
+
+        } else {
+
+          window.location.href = "/dashboard.html";
+
+        }
+
+      } catch (error) {
+
+        showMessage(
+          message,
+          error.message
+        );
+
+      }
+
+    });
+
+  </script>
+
+</body>
+
+</html>

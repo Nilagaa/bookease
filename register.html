@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>BookEase | Create Account</title>
+
+  <link rel="stylesheet" href="styles.css">
+
+</head>
+
+<body>
+
+  <div class="auth-page">
+
+
+    <!-- LEFT IMAGE -->
+    <div class="auth-image">
+
+      <div class="auth-image-content">
+
+        <div class="logo" style="color:white; margin-bottom:25px;">
+          <span class="logo-icon">B</span>
+          BookEase
+        </div>
+
+        <h1>
+          Your time matters.
+        </h1>
+
+        <p>
+          Create an account and start managing your
+          bookings in one convenient place.
+        </p>
+
+      </div>
+
+    </div>
+
+
+    <!-- FORM -->
+    <div class="auth-form-side">
+
+      <div class="auth-box">
+
+        <div class="auth-logo">
+
+          <a href="index.html" class="logo">
+
+            <span class="logo-icon">
+              B
+            </span>
+
+            BookEase
+
+          </a>
+
+        </div>
+
+
+        <h2>
+          Create your account
+        </h2>
+
+        <p class="auth-description">
+          Register as a customer to start making bookings.
+        </p>
+
+
+        <div id="message"></div>
+
+
+        <form id="registerForm">
+
+
+          <div class="form-group">
+
+            <label for="username">
+              Username
+            </label>
+
+            <input
+              id="username"
+              class="form-control"
+              type="text"
+              placeholder="Choose a username"
+              required
+              minlength="3"
+            >
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label for="password">
+              Password
+            </label>
+
+            <input
+              id="password"
+              class="form-control"
+              type="password"
+              placeholder="Create a password"
+              required
+              minlength="6"
+            >
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label for="confirmPassword">
+              Confirm Password
+            </label>
+
+            <input
+              id="confirmPassword"
+              class="form-control"
+              type="password"
+              placeholder="Enter your password again"
+              required
+            >
+
+          </div>
+
+
+          <button
+            type="submit"
+            class="btn btn-primary"
+            style="width:100%;"
+          >
+            Create Account
+          </button>
+
+
+        </form>
+
+
+<div class="form-footer">
+
+  Already have an account?
+
+  <a href="index.html">
+    Sign in
+  </a>
+
+	</div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <script src="app.js"></script>
+
+  <script>
+
+    const form =
+      document.getElementById("registerForm");
+
+    const message =
+      document.getElementById("message");
+
+
+    form.addEventListener("submit", async (event) => {
+
+      event.preventDefault();
+
+      message.innerHTML = "";
+
+
+      const username =
+        document.getElementById("username").value;
+
+      const password =
+        document.getElementById("password").value;
+
+      const confirmPassword =
+        document.getElementById("confirmPassword").value;
+
+
+      if (password !== confirmPassword) {
+
+        showMessage(
+          message,
+          "Passwords do not match."
+        );
+
+        return;
+
+      }
+
+
+      try {
+
+        await api("/register", {
+
+          method: "POST",
+
+          body: JSON.stringify({
+            username,
+            password
+          })
+
+        });
+
+
+        showMessage(
+          message,
+          "Account created successfully! Redirecting...",
+          "success"
+        );
+
+
+        setTimeout(() => {
+
+          window.location.href = "/";
+
+        }, 1200);
+
+
+      } catch (error) {
+
+        showMessage(
+          message,
+          error.message
+        );
+
+      }
+
+    });
+
+  </script>
+
+</body>
+
+</html>

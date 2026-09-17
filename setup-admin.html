@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>BookEase | Admin Setup</title>
+
+  <link rel="stylesheet" href="styles.css">
+
+</head>
+
+
+<body class="setup-page">
+
+
+  <div class="setup-box">
+
+
+    <a href="/" class="logo" style="margin-bottom:30px;">
+
+      <span class="logo-icon">
+        B
+      </span>
+
+      BookEase
+
+    </a>
+
+
+    <h1>
+      Administrator Setup
+    </h1>
+
+
+    <p>
+      Use this page once to create the administrator
+      account for your booking system.
+    </p>
+
+
+    <div id="message"></div>
+
+
+    <form id="setupForm">
+
+
+      <div class="form-group">
+
+        <label for="secret">
+          Setup Secret
+        </label>
+
+        <input
+          id="secret"
+          class="form-control"
+          type="password"
+          placeholder="Enter setup secret"
+          required
+        >
+
+      </div>
+
+
+      <div class="form-group">
+
+        <label for="username">
+          Admin Username
+        </label>
+
+        <input
+          id="username"
+          class="form-control"
+          type="text"
+          placeholder="Choose admin username"
+          required
+        >
+
+      </div>
+
+
+      <div class="form-group">
+
+        <label for="password">
+          Admin Password
+        </label>
+
+        <input
+          id="password"
+          class="form-control"
+          type="password"
+          placeholder="Create admin password"
+          required
+        >
+
+      </div>
+
+
+      <button
+        type="submit"
+        class="btn btn-primary"
+        style="width:100%;"
+      >
+        Create Administrator
+      </button>
+
+
+    </form>
+
+
+    <div class="form-footer">
+
+      <a href="/">
+        Return to login
+      </a>
+
+    </div>
+
+
+  </div>
+
+
+  <script src="app.js"></script>
+
+
+  <script>
+
+    const form =
+      document.getElementById("setupForm");
+
+    const message =
+      document.getElementById("message");
+
+
+    form.addEventListener("submit", async (event) => {
+
+      event.preventDefault();
+
+      message.innerHTML = "";
+
+
+      const secret =
+        document.getElementById("secret").value;
+
+      const username =
+        document.getElementById("username").value;
+
+      const password =
+        document.getElementById("password").value;
+
+
+      try {
+
+        await api("/setup-admin", {
+
+          method: "POST",
+
+          body: JSON.stringify({
+            secret,
+            username,
+            password
+          })
+
+        });
+
+
+        showMessage(
+          message,
+          "Administrator created successfully! You can now log in.",
+          "success"
+        );
+
+
+        form.reset();
+
+
+      } catch (error) {
+
+        showMessage(
+          message,
+          error.message
+        );
+
+      }
+
+    });
+
+  </script>
+
+</body>
+
+</html>

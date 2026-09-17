@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>BookEase | Admin Dashboard</title>
+
+  <link rel="stylesheet" href="styles.css">
+
+</head>
+
+
+<body class="admin-page">
+
+
+  <!-- ADMIN NAVBAR -->
+
+  <nav class="navbar admin-navbar">
+
+    <div class="container navbar-inner">
+
+      <a href="/admin.html" class="logo">
+
+        <span class="logo-icon">
+          B
+        </span>
+
+        BookEase
+        <span style="font-size:.7rem; opacity:.6;">
+          ADMIN
+        </span>
+
+      </a>
+
+
+      <div class="nav-actions">
+
+        <span
+          id="adminUsername"
+          style="font-size:.9rem; color:#cbd5e1;"
+        >
+          Admin
+        </span>
+
+        <button
+          id="logoutBtn"
+          class="btn btn-outline"
+        >
+          Log Out
+        </button>
+
+      </div>
+
+    </div>
+
+  </nav>
+
+
+
+  <!-- ADMIN CONTENT -->
+
+  <main class="admin-main">
+
+
+    <!-- WELCOME -->
+
+    <section class="admin-welcome">
+
+      <div class="admin-badge">
+        ADMINISTRATOR AREA
+      </div>
+
+
+      <h1>
+        Congratulations, you accessed the admin page.
+      </h1>
+
+
+      <p>
+        You have successfully entered the administrator
+        dashboard. From here, you can monitor customer
+        bookings and manage their status.
+      </p>
+
+    </section>
+
+
+
+    <!-- STATS -->
+
+    <section class="stats-grid">
+
+
+      <div class="stat-card">
+
+        <span>
+          Total Customers
+        </span>
+
+        <strong id="customerCount">
+          0
+        </strong>
+
+      </div>
+
+
+      <div class="stat-card">
+
+        <span>
+          Total Bookings
+        </span>
+
+        <strong id="bookingCount">
+          0
+        </strong>
+
+      </div>
+
+
+      <div class="stat-card">
+
+        <span>
+          Pending Bookings
+        </span>
+
+        <strong id="pendingCount">
+          0
+        </strong>
+
+      </div>
+
+
+    </section>
+
+
+
+    <!-- BOOKINGS -->
+
+    <section class="card">
+
+      <div class="card-header">
+
+        <h2>
+          Customer Bookings
+        </h2>
+
+        <p>
+          Review and update incoming booking requests.
+        </p>
+
+      </div>
+
+
+      <div class="table-wrapper">
+
+        <table class="data-table">
+
+          <thead>
+
+            <tr>
+
+              <th>
+                Customer
+              </th>
+
+              <th>
+                Service
+              </th>
+
+              <th>
+                Date
+              </th>
+
+              <th>
+                Time
+              </th>
+
+              <th>
+                Notes
+              </th>
+
+              <th>
+                Status
+              </th>
+
+            </tr>
+
+          </thead>
+
+
+          <tbody id="bookingTable">
+
+            <tr>
+
+              <td colspan="6">
+                Loading...
+              </td>
+
+            </tr>
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </section>
+
+
+
+    <!-- USERS -->
+
+    <section
+      class="card"
+      style="margin-top:30px;"
+    >
+
+      <div class="card-header">
+
+        <h2>
+          Registered Customers
+        </h2>
+
+        <p>
+          Users currently registered in the system.
+        </p>
+
+      </div>
+
+
+      <div class="table-wrapper">
+
+        <table class="data-table">
+
+          <thead>
+
+            <tr>
+
+              <th>
+                Username
+              </th>
+
+              <th>
+                Account Type
+              </th>
+
+              <th>
+                Registered
+              </th>
+
+            </tr>
+
+          </thead>
+
+
+          <tbody id="userTable">
+
+            <tr>
+
+              <td colspan="3">
+                Loading...
+              </td>
+
+            </tr>
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </section>
+
+
+  </main>
+
+
+
+  <script src="app.js"></script>
+
+
+  <script>
+
+    async function loadAdmin() {
+
+      try {
+
+        const me =
+          await api("/me");
+
+
+        if (me.user.role !== "admin") {
+
+          window.location.href =
+            "/dashboard.html";
+
+          return;
+
+        }
+
+
+        document.getElementById(
+          "adminUsername"
+        ).textContent =
+          me.user.username;
+
+
+        const result =
+          await api("/admin-data");
+
+
+        const customers =
+          result.users.filter(
+            user => user.role === "customer"
+          );
+
+
+        const pending =
+          result.bookings.filter(
+            booking => booking.status === "Pending"
+          );
+
+
+        document.getElementById(
+          "customerCount"
+        ).textContent =
+          customers.length;
+
+
+        document.getElementById(
+          "bookingCount"
+        ).textContent =
+          result.bookings.length;
+
+
+        document.getElementById(
+          "pendingCount"
+        ).textContent =
+          pending.length;
+
+
+        renderBookings(
+          result.bookings
+        );
+
+
+        renderUsers(
+          result.users
+        );
+
+
+      } catch {
+
+        window.location.href = "/";
+
+      }
+
+    }
+
+
+
+    function renderBookings(bookings) {
+
+      const table =
+        document.getElementById("bookingTable");
+
+
+      if (!bookings.length) {
+
+        table.innerHTML = `
+
+          <tr>
+
+            <td colspan="6" style="text-align:center;">
+
+              No bookings have been submitted yet.
+
+            </td>
+
+          </tr>
+
+        `;
+
+        return;
+
+      }
+
+
+      table.innerHTML =
+        bookings.map(booking => `
+
+          <tr>
+
+            <td>
+              <strong>
+                ${escapeHtml(booking.username)}
+              </strong>
+            </td>
+
+            <td>
+              ${escapeHtml(booking.service)}
+            </td>
+
+            <td>
+              ${escapeHtml(formatDate(booking.date))}
+            </td>
+
+            <td>
+              ${escapeHtml(booking.time)}
+            </td>
+
+            <td>
+              ${escapeHtml(booking.notes || "-")}
+            </td>
+
+            <td>
+
+              <select
+                onchange="changeStatus(
+                  '${escapeHtml(booking.id)}',
+                  this.value
+                )"
+              >
+
+                <option
+                  value="Pending"
+                  ${booking.status === "Pending" ? "selected" : ""}
+                >
+                  Pending
+                </option>
+
+                <option
+                  value="Confirmed"
+                  ${booking.status === "Confirmed" ? "selected" : ""}
+                >
+                  Confirmed
+                </option>
+
+                <option
+                  value="Completed"
+                  ${booking.status === "Completed" ? "selected" : ""}
+                >
+                  Completed
+                </option>
+
+                <option
+                  value="Cancelled"
+                  ${booking.status === "Cancelled" ? "selected" : ""}
+                >
+                  Cancelled
+                </option>
+
+              </select>
+
+            </td>
+
+          </tr>
+
+        `).join("");
+
+    }
+
+
+
+    function renderUsers(users) {
+
+      const table =
+        document.getElementById("userTable");
+
+
+      if (!users.length) {
+
+        table.innerHTML = `
+
+          <tr>
+
+            <td colspan="3">
+              No users found.
+            </td>
+
+          </tr>
+
+        `;
+
+        return;
+
+      }
+
+
+      table.innerHTML =
+        users.map(user => `
+
+          <tr>
+
+            <td>
+              ${escapeHtml(user.username)}
+            </td>
+
+            <td>
+              ${escapeHtml(user.role)}
+            </td>
+
+            <td>
+              ${user.createdAt
+                ? new Date(user.createdAt).toLocaleDateString()
+                : "-"
+              }
+            </td>
+
+          </tr>
+
+        `).join("");
+
+    }
+
+
+
+    async function changeStatus(id, status) {
+
+      try {
+
+        await api("/update-booking", {
+
+          method: "POST",
+
+          body: JSON.stringify({
+            id,
+            status
+          })
+
+        });
+
+
+        await loadAdmin();
+
+
+      } catch (error) {
+
+        alert(
+          "Could not update booking: " +
+          error.message
+        );
+
+      }
+
+    }
+
+
+
+    async function logout() {
+
+      try {
+
+        await api("/logout", {
+          method: "POST"
+        });
+
+      } finally {
+
+        window.location.href = "/";
+
+      }
+
+    }
+
+
+    document
+      .getElementById("logoutBtn")
+      .addEventListener("click", logout);
+
+
+    loadAdmin();
+
+  </script>
+
+</body>
+
+</html>
